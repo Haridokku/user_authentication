@@ -34,7 +34,7 @@ const authenticateToken = (request, response, next) => {
     response.status(401);
     response.send("Invalid JWT Token");
   } else {
-    jwt.verify(jwtToken, "MY_SECRET_TOKEN", async (error, payload) => {
+    jwt.verify(jwtToken, "hari", async (error, payload) => {
       if (error) {
         response.status(401);
         response.send("Invalid JWT Token");
@@ -64,11 +64,11 @@ app.post("/register/", async (request, response) => {
 
 app.post("/login/", async (request, response) => {
   const { username, password } = request.body;
-  const registerQuery = `
+  const userQuery = `
   SELECT * FROM user WHERE username='${username}';`;
-  const dbUser = await db.get(registerQuery);
+  const dbUser = await db.get(userQuery);
   if (dbUser === undefined) {
-    response.send(400);
+    response.status(400);
     response.send("Invalid user");
   } else {
     const isPasswordMatch = await bcrypt.compare(password, dbUser.password);
@@ -77,7 +77,7 @@ app.post("/login/", async (request, response) => {
       const jwtToken = jwt.sign(payload, "hari");
       response.send({ jwtToken });
     } else {
-      response.send(400);
+      response.status(400);
       response.send("Invalid password");
     }
   }
@@ -212,3 +212,4 @@ app.get(
 );
 
 module.exports = app;
+
